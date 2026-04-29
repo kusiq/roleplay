@@ -1,44 +1,46 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..700,0..1,-50..200&display=swap");
 
 :root {
   color-scheme: light;
-  --bg: #f4f6f2;
-  --bg-wash: #eef6eb;
+  --bg: #f4f7fb;
+  --bg-wash: #eaf2ff;
   --surface: #ffffff;
-  --surface-soft: #eef3ec;
-  --surface-raised: #fbfdf8;
-  --border: #dce5d9;
-  --text: #172018;
-  --muted: #687566;
-  --faint: #8a9688;
-  --green: #28a847;
-  --green-soft: #e4f7e8;
-  --red: #da323c;
-  --red-soft: #fde8ea;
-  --blue: #2f6fdb;
-  --blue-soft: #e8efff;
-  --yellow: #f6c445;
-  --shadow: rgba(16, 35, 20, 0.08);
-  --shadow-strong: rgba(16, 35, 20, 0.14);
+  --surface-soft: #eef5ff;
+  --surface-raised: #fbfdff;
+  --glass: rgba(255, 255, 255, 0.72);
+  --border: rgba(47, 125, 225, 0.16);
+  --text: #121821;
+  --muted: #5c6b7e;
+  --faint: #8290a3;
+  --green: #2f7de1;
+  --green-soft: #e7f1ff;
+  --red: #e64d5b;
+  --red-soft: #fff0f2;
+  --blue: #2f7de1;
+  --blue-soft: #e7f1ff;
+  --yellow: #f4c753;
+  --shadow: rgba(22, 50, 92, 0.1);
+  --shadow-strong: rgba(14, 28, 52, 0.18);
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #111611;
-  --bg-wash: #172017;
-  --surface: #1a211a;
-  --surface-soft: #232c22;
-  --surface-raised: #202820;
-  --border: #344034;
-  --text: #f4f8f1;
-  --muted: #b7c2b2;
-  --faint: #84907f;
-  --green: #65d982;
-  --green-soft: #203a27;
-  --red: #ff6a72;
-  --red-soft: #3a2125;
-  --blue: #7fa7ff;
-  --blue-soft: #202a43;
+  --bg: #080d14;
+  --bg-wash: #0d1725;
+  --surface: #111a27;
+  --surface-soft: #172235;
+  --surface-raised: #101824;
+  --glass: rgba(17, 26, 39, 0.74);
+  --border: rgba(146, 180, 232, 0.18);
+  --text: #f6f9ff;
+  --muted: #b5c2d5;
+  --faint: #7f8ca0;
+  --green: #79afff;
+  --green-soft: #162b49;
+  --red: #ff7884;
+  --red-soft: #351b24;
+  --blue: #79afff;
+  --blue-soft: #162b49;
   --yellow: #f5cf68;
   --shadow: rgba(0, 0, 0, 0.28);
   --shadow-strong: rgba(0, 0, 0, 0.38);
@@ -49,19 +51,28 @@
 }
 
 html {
-  min-width: 320px;
+  min-width: 0;
+  width: 100%;
+  overflow-x: hidden;
   background: var(--bg);
   font-family: "Manrope", "Segoe UI", sans-serif;
 }
 
 body {
-  min-width: 320px;
+  min-width: 0;
+  width: 100%;
+  overflow-x: hidden;
   margin: 0;
   background:
     radial-gradient(
       circle at 20% 10%,
-      color-mix(in srgb, var(--green-soft) 65%, transparent),
+      color-mix(in srgb, var(--blue-soft) 72%, transparent),
       transparent 32%
+    ),
+    radial-gradient(
+      circle at 86% 0%,
+      color-mix(in srgb, var(--red-soft) 70%, transparent),
+      transparent 28%
     ),
     linear-gradient(180deg, var(--surface-raised), var(--bg));
   color: var(--text);
@@ -98,35 +109,32 @@ textarea:focus-visible {
 
 .app-shell {
   min-height: 100vh;
+  overflow-x: clip;
 }
 
 .login-screen {
   display: grid;
   min-height: 100vh;
   place-items: center;
-  padding: 24px;
+  padding: 18px;
 }
 
 .login-card {
   width: min(100%, 430px);
-  padding: 28px;
+  padding: 22px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 28px;
   background:
-    linear-gradient(
-      160deg,
-      color-mix(in srgb, var(--green-soft) 42%, transparent),
-      transparent 45%
-    ),
-    var(--surface);
+    linear-gradient(160deg, color-mix(in srgb, var(--blue-soft) 56%, transparent), transparent 45%),
+    var(--glass);
   box-shadow: 0 24px 70px var(--shadow);
+  backdrop-filter: blur(24px) saturate(1.25);
 }
 
 .brand-row,
 .app-header,
 .header-brand,
 .header-actions,
-.top-nav,
 .avatar-row,
 .profile-split,
 .section-heading,
@@ -150,26 +158,31 @@ textarea:focus-visible {
 }
 
 .brand-mark {
-  display: grid;
-  width: 42px;
+  width: 64px;
   height: 42px;
+  display: block;
   flex: 0 0 auto;
-  place-items: center;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--green), var(--red));
-  color: white;
-  font-size: 13px;
-  font-weight: 800;
 }
 
 .icon {
-  width: 20px;
-  height: 20px;
+  display: inline-flex;
+  width: 1em;
+  height: 1em;
+  align-items: center;
+  justify-content: center;
   flex: 0 0 auto;
+  overflow: visible;
+  font-size: 22px;
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 520,
+    "GRAD" 0,
+    "opsz" 24;
+  line-height: 1;
 }
 
 .login-heading {
-  margin: 70px 0 28px;
+  margin: 46px 0 24px;
 }
 
 .eyebrow,
@@ -219,12 +232,19 @@ p {
   font-weight: 700;
 }
 
-.auth-form input,
+.auth-form input {
+  background: var(--surface-raised);
+  color: var(--text);
+  border-radius: 35px 99px 99px 99px;
+  width: 100%;
+  border: 1px solid var(--border);
+}
+
 .add-goal-form input,
 .editable-panel textarea {
   width: 100%;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 10px;
   background: var(--surface-raised);
   color: var(--text);
 }
@@ -236,7 +256,8 @@ p {
 }
 
 .editable-panel textarea {
-  min-height: 126px;
+  min-height: 132px;
+  max-height: 260px;
   resize: vertical;
   padding: 14px 16px;
   line-height: 1.55;
@@ -245,7 +266,6 @@ p {
 .primary-button,
 .danger-button,
 .ghost-button,
-.nav-pill,
 .bottom-nav-item,
 .achievement-card,
 .icon-button,
@@ -272,9 +292,19 @@ p {
 }
 
 .primary-button {
-  background: var(--green);
+  background: linear-gradient(135deg, #8fbdff, var(--blue));
   color: white;
   box-shadow: 0 12px 26px color-mix(in srgb, var(--green) 24%, transparent);
+}
+
+.primary-button.small {
+  min-height: 38px;
+  padding: 0 16px;
+  font-size: 12px;
+}
+
+.login-button {
+  background: linear-gradient(135deg, #a8cdfd, #5c98eb);
 }
 
 .danger-button {
@@ -291,13 +321,19 @@ p {
 
 .icon-button {
   display: inline-grid;
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   place-items: center;
   border: 1px solid var(--border);
   border-radius: 50%;
-  background: var(--surface-soft);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
   color: var(--text);
+  backdrop-filter: blur(18px);
+}
+
+.icon-button.compact {
+  width: 34px;
+  height: 34px;
 }
 
 .icon-button.danger {
@@ -309,7 +345,6 @@ p {
 .primary-button:hover,
 .danger-button:hover,
 .ghost-button:hover,
-.nav-pill:hover,
 .bottom-nav-item:hover,
 .achievement-card:hover,
 .icon-button:hover,
@@ -319,29 +354,39 @@ p {
 
 .dashboard {
   min-height: 100vh;
-  padding: 28px 32px 118px;
+  width: 100%;
+  padding: 14px 16px 102px;
 }
 
 .app-header {
-  gap: 24px;
-  max-width: 1400px;
-  min-height: 72px;
+  position: sticky;
+  z-index: 11;
+  top: 10px;
+  gap: 12px;
+  max-width: 1180px;
+  min-height: 58px;
   margin: 0 auto;
-  padding: 14px 18px;
+  padding: 8px 10px 8px 12px;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  border-radius: 22px;
+  background: var(--glass);
   box-shadow: 0 18px 50px var(--shadow);
+  backdrop-filter: blur(24px) saturate(1.35);
 }
 
 .header-brand {
-  min-width: 236px;
-  gap: 14px;
+  min-width: 0;
+  flex: 1 1 auto;
+  gap: 10px;
 }
 
 .header-brand strong {
   display: block;
-  font-size: 17px;
+  overflow: hidden;
+  font-size: 16px;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .header-brand span {
@@ -349,49 +394,26 @@ p {
   color: var(--muted);
   font-size: 12px;
   font-weight: 700;
-}
-
-.top-nav {
-  flex: 1;
-  gap: 10px;
-}
-
-.nav-pill {
-  display: inline-flex;
-  min-width: 146px;
-  min-height: 44px;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 0 16px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: transparent;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.nav-pill.active {
-  border-color: color-mix(in srgb, var(--green) 42%, var(--border));
-  background: var(--green-soft);
-  color: var(--text);
+  white-space: nowrap;
 }
 
 .header-actions {
-  gap: 10px;
+  flex: 0 0 auto;
+  gap: 8px;
 }
 
 .dashboard-grid,
 .content-page {
-  max-width: 1400px;
-  margin: 28px auto 0;
+  width: min(100%, 1180px);
+  max-width: 1180px;
+  margin: 18px auto 0;
+  min-width: 0;
 }
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: minmax(280px, 344px) minmax(460px, 1fr) minmax(286px, 328px);
-  gap: 24px;
+  grid-template-columns: minmax(280px, 324px) minmax(420px, 1fr) minmax(260px, 300px);
+  gap: 18px;
 }
 
 .profile-column,
@@ -405,22 +427,35 @@ p {
 .panel,
 .achievement-card {
   border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface);
+  border-radius: 24px;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
   box-shadow: 0 18px 48px var(--shadow);
+  backdrop-filter: blur(20px);
 }
 
 .profile-card {
   position: relative;
   overflow: hidden;
-  padding: 40px 24px 24px;
+  padding: 30px 20px 22px;
 }
 
 .profile-ribbon {
   position: absolute;
   inset: 0 0 auto;
-  height: 92px;
-  background: linear-gradient(110deg, var(--green), #6f7b3f 48%, var(--red));
+  display: flex;
+  height: 86px;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 16px 20px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--blue-soft) 82%, transparent), transparent),
+    linear-gradient(110deg, rgba(47, 125, 225, 0.16), rgba(230, 77, 91, 0.12));
+}
+
+.profile-ribbon img {
+  width: 78px;
+  height: 56px;
+  opacity: 0.86;
 }
 
 .avatar-row {
@@ -445,7 +480,7 @@ p {
   place-items: center;
   border: 5px solid var(--surface);
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--yellow), var(--green));
+  background: linear-gradient(135deg, var(--blue), var(--red));
   color: white;
   font-size: 28px;
   font-weight: 800;
@@ -482,7 +517,7 @@ p {
   margin-top: 12px;
   padding: 8px 18px;
   border-radius: 999px;
-  background: var(--green-soft);
+  background: color-mix(in srgb, var(--blue-soft) 86%, transparent);
   color: var(--green);
   font-size: 12px;
   font-weight: 800;
@@ -565,12 +600,34 @@ p {
 .achievements-panel,
 .leaderboard-wide,
 .achievement-section {
-  padding: 24px;
+  padding: 20px;
+}
+
+.description-text {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.description-editor {
+  display: grid;
+  gap: 10px;
+}
+
+.editor-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--faint);
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .section-heading {
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .section-heading h2 {
@@ -651,18 +708,14 @@ p {
   width: var(--progress);
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(
-    90deg,
-    var(--green),
-    color-mix(in srgb, var(--green) 60%, var(--blue))
-  );
+  background: linear-gradient(90deg, var(--blue), color-mix(in srgb, var(--blue) 42%, var(--red)));
 }
 
 .progress-panel {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 150px;
   gap: 20px 28px;
-  padding: 28px 32px;
+  padding: 24px;
 }
 
 .progress-panel h1 {
@@ -765,8 +818,12 @@ p {
   gap: 16px;
   padding: 22px;
   border: 1px solid color-mix(in srgb, var(--red) 18%, var(--border));
-  border-radius: 8px;
-  background: linear-gradient(135deg, var(--green-soft), var(--red-soft));
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--blue-soft) 82%, transparent), transparent),
+    color-mix(in srgb, var(--surface) 84%, transparent);
+  box-shadow: 0 18px 48px var(--shadow);
+  backdrop-filter: blur(20px);
 }
 
 .next-checkin h2 {
@@ -806,7 +863,7 @@ p {
   width: 38px;
   height: 38px;
   place-items: center;
-  border: 1px solid color-mix(in srgb, var(--green) 42%, var(--border));
+  border: 1px solid color-mix(in srgb, var(--blue) 42%, var(--border));
   border-radius: 50%;
   background: var(--green-soft);
   color: var(--green);
@@ -826,25 +883,27 @@ p {
 
 .content-page {
   display: grid;
-  gap: 24px;
+  gap: 18px;
 }
 
 .page-heading {
   gap: 24px;
-  min-height: 150px;
-  padding: 30px 34px;
+  min-height: 112px;
+  padding: 22px 24px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 24px;
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--green-soft) 65%, transparent), transparent),
-    var(--surface);
+    linear-gradient(135deg, color-mix(in srgb, var(--blue-soft) 72%, transparent), transparent),
+    color-mix(in srgb, var(--surface) 88%, transparent);
   box-shadow: 0 18px 48px var(--shadow);
+  backdrop-filter: blur(20px);
 }
 
 .page-heading .icon {
   width: 46px;
   height: 46px;
   color: var(--green);
+  font-size: 46px;
 }
 
 .achievement-sections {
@@ -867,23 +926,23 @@ p {
 }
 
 .leader-list.wide {
-  gap: 14px;
+  gap: 10px;
 }
 
 .leader-row {
   display: grid;
-  grid-template-columns: 34px 36px minmax(0, 1fr) auto;
-  gap: 12px;
-  min-height: 56px;
-  padding: 10px 14px;
+  grid-template-columns: 28px 34px minmax(0, 1fr) max-content;
+  gap: 10px;
+  min-height: 54px;
+  padding: 10px 12px;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface-raised);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--surface-raised) 86%, transparent);
 }
 
 .leader-list.wide .leader-row {
-  min-height: 72px;
-  padding: 16px 18px;
+  min-height: 58px;
+  padding: 12px 14px;
 }
 
 .leader-row.current {
@@ -914,53 +973,62 @@ p {
 
 .leader-row span,
 .leader-row b {
-  overflow-wrap: anywhere;
   font-size: 13px;
+  white-space: nowrap;
+}
+
+.leader-row > span:not(.leader-avatar) {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .leader-row b {
   color: var(--muted);
+  font-size: 12px;
 }
 
 .bottom-nav {
   position: fixed;
   z-index: 10;
   right: 50%;
-  bottom: 20px;
+  bottom: 14px;
   display: grid;
-  width: min(620px, calc(100vw - 32px));
+  width: min(500px, calc(100vw - 24px));
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  padding: 10px;
+  gap: 4px;
+  padding: 6px;
   border: 1px solid var(--border);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--surface) 90%, transparent);
-  box-shadow: 0 18px 54px var(--shadow-strong);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent), var(--glass);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    0 18px 54px var(--shadow-strong);
   transform: translateX(50%);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(4px) saturate(1.4);
 }
 
 .bottom-nav-item {
   display: grid;
   min-width: 0;
-  min-height: 56px;
+  min-height: 48px;
   place-items: center;
-  gap: 4px;
+  align-content: center;
+  gap: 1px;
   border-radius: 999px;
   background: transparent;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
 }
 
 .bottom-nav-item.active {
   background: var(--green-soft);
   color: var(--green);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--blue) 12%, transparent);
 }
 
 .bottom-nav-item .icon {
-  width: 21px;
-  height: 21px;
+  font-size: 22px;
 }
 
 .modal-backdrop {
@@ -978,7 +1046,7 @@ p {
   width: min(100%, 430px);
   padding: 28px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 24px;
   background: var(--surface);
   box-shadow: 0 26px 80px var(--shadow-strong);
 }
@@ -1027,29 +1095,46 @@ p {
   .achievement-sections {
     grid-template-columns: 1fr;
   }
-
-  .top-nav {
-    display: none;
-  }
 }
 
 @media (max-width: 760px) {
+  .login-screen {
+    align-items: start;
+    padding: 12px;
+  }
+
+  .login-card {
+    padding: 20px;
+  }
+
+  .login-heading {
+    margin: 34px 0 22px;
+  }
+
   .dashboard {
-    padding: 16px 16px 112px;
+    padding: 10px 10px 92px;
   }
 
   .app-header {
-    align-items: stretch;
-    flex-wrap: wrap;
+    top: 8px;
+    align-items: center;
+    flex-wrap: nowrap;
+    border-radius: 20px;
   }
 
   .header-brand {
     min-width: 0;
-    flex: 1 1 210px;
+    flex: 1 1 auto;
   }
 
   .header-actions {
     margin-left: auto;
+    gap: 6px;
+  }
+
+  .header-actions .icon-button {
+    width: 38px;
+    height: 38px;
   }
 
   .dashboard-grid,
@@ -1100,18 +1185,18 @@ p {
 
   .page-heading {
     min-height: auto;
-    padding: 24px;
+    padding: 18px;
   }
 
   .bottom-nav {
-    bottom: 12px;
-    width: calc(100vw - 20px);
+    bottom: 10px;
+    width: calc(100vw - 18px);
     gap: 4px;
-    padding: 8px;
+    padding: 5px;
   }
 
   .bottom-nav-item {
-    min-height: 54px;
+    min-height: 46px;
     font-size: 10px;
   }
 

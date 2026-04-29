@@ -2,8 +2,8 @@ import type { ChangeEvent, CSSProperties, FormEvent, ReactElement } from "react"
 import { useEffect, useRef, useState } from "react";
 import {
   achievements,
-  activities,
   activist,
+  activities,
   goals as initialGoals,
   leaderboard,
   stats,
@@ -25,6 +25,15 @@ type IconName =
   | "sun"
   | "target"
   | "user";
+
+const eventsBoardUrl = "https://mger-board.vercel.app";
+const maxDescriptionLength = 1000;
+
+const viewTitles: Record<AppView, string> = {
+  profile: "Профиль активиста",
+  achievements: "Достижения",
+  leaderboard: "Лидерборд",
+};
 
 type WeeklyGoal = {
   title: string;
@@ -90,9 +99,7 @@ function LoginScreen({
         </div>
 
         <div className="login-heading">
-          <p className="eyebrow">Молодая Гвардия</p>
           <h1>Вход в профиль активиста</h1>
-          <p>Личный кабинет для участия, опыта и достижений штаба.</p>
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
@@ -114,8 +121,7 @@ function LoginScreen({
               type="password"
             />
           </label>
-          <button className="primary-button" type="submit">
-            <Icon name="shield" />
+          <button className="primary-button login-button" type="submit">
             Войти в профиль
           </button>
         </form>
@@ -137,8 +143,13 @@ function Dashboard({
   const [isSignOutOpen, setIsSignOutOpen] = useState(false);
   const [goals, setGoals] = useState<WeeklyGoal[]>([...initialGoals]);
   const [description, setDescription] = useState(activist.description);
+  const [isDescriptionEditing, setIsDescriptionEditing] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string>();
   const [newGoalTitle, setNewGoalTitle] = useState("");
+
+  const openEventsBoard = () => {
+    window.open(eventsBoardUrl, "_blank", "noopener,noreferrer");
+  };
 
   const addGoal = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -162,10 +173,14 @@ function Dashboard({
         avatarUrl={avatarUrl}
         description={description}
         goals={goals}
+        isDescriptionEditing={isDescriptionEditing}
         newGoalTitle={newGoalTitle}
         onAddGoal={addGoal}
         onAvatarChange={setAvatarUrl}
         onDescriptionChange={setDescription}
+        onDescriptionEditToggle={() => setIsDescriptionEditing((current) => !current)}
+        onDescriptionSave={() => setIsDescriptionEditing(false)}
+        onOpenEventsBoard={openEventsBoard}
         onNewGoalTitleChange={setNewGoalTitle}
       />
     ),
@@ -178,14 +193,17 @@ function Dashboard({
       <AppHeader
         activeView={activeView}
         onOpenSignOut={() => setIsSignOutOpen(true)}
-        onSelectView={setActiveView}
         onToggleTheme={onToggleTheme}
         theme={theme}
       />
 
       {content[activeView]}
 
-      <BottomNav activeView={activeView} onSelectView={setActiveView} />
+      <BottomNav
+        activeView={activeView}
+        onOpenEventsBoard={openEventsBoard}
+        onSelectView={setActiveView}
+      />
 
       {isSignOutOpen ? (
         <SignOutModal
@@ -203,13 +221,11 @@ function Dashboard({
 function AppHeader({
   activeView,
   onOpenSignOut,
-  onSelectView,
   onToggleTheme,
   theme,
 }: {
   activeView: AppView;
   onOpenSignOut: () => void;
-  onSelectView: (view: AppView) => void;
   onToggleTheme: () => void;
   theme: ThemeMode;
 }) {
@@ -218,31 +234,10 @@ function AppHeader({
       <div className="header-brand">
         <BrandMark />
         <div>
-          <strong>Профиль активиста</strong>
-          <span>личный кабинет штаба</span>
+          <strong>{viewTitles[activeView]}</strong>
+          <span>Молодая Гвардия</span>
         </div>
       </div>
-
-      <nav className="top-nav" aria-label="Разделы">
-        <TopNavButton
-          active={activeView === "profile"}
-          icon="user"
-          label="Профиль"
-          onClick={() => onSelectView("profile")}
-        />
-        <TopNavButton
-          active={activeView === "achievements"}
-          icon="award"
-          label="Достижения"
-          onClick={() => onSelectView("achievements")}
-        />
-        <TopNavButton
-          active={activeView === "leaderboard"}
-          icon="leaderboard"
-          label="Рейтинг"
-          onClick={() => onSelectView("leaderboard")}
-        />
-      </nav>
 
       <div className="header-actions">
         <IconButton
@@ -256,30 +251,13 @@ function AppHeader({
   );
 }
 
-function TopNavButton({
-  active,
-  icon,
-  label,
-  onClick,
-}: {
-  active: boolean;
-  icon: IconName;
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <button className={active ? "nav-pill active" : "nav-pill"} type="button" onClick={onClick}>
-      <Icon name={icon} />
-      {label}
-    </button>
-  );
-}
-
 function BottomNav({
   activeView,
+  onOpenEventsBoard,
   onSelectView,
 }: {
   activeView: AppView;
+  onOpenEventsBoard: () => void;
   onSelectView: (view: AppView) => void;
 }) {
   return (
@@ -308,15 +286,10 @@ function BottomNav({
         <Icon name="leaderboard" />
         <span>Рейтинг</span>
       </button>
-      <a
-        className="bottom-nav-item"
-        href="https://mger-board.vercel.app"
-        rel="noreferrer"
-        target="_blank"
-      >
+      <button className="bottom-nav-item" type="button" onClick={onOpenEventsBoard}>
         <Icon name="calendar" />
         <span>События</span>
-      </a>
+      </button>
     </nav>
   );
 }
@@ -325,19 +298,27 @@ function ProfileView({
   avatarUrl,
   description,
   goals,
+  isDescriptionEditing,
   newGoalTitle,
   onAddGoal,
   onAvatarChange,
   onDescriptionChange,
+  onDescriptionEditToggle,
+  onDescriptionSave,
+  onOpenEventsBoard,
   onNewGoalTitleChange,
 }: {
   avatarUrl?: string;
   description: string;
   goals: WeeklyGoal[];
+  isDescriptionEditing: boolean;
   newGoalTitle: string;
   onAddGoal: (event: FormEvent<HTMLFormElement>) => void;
   onAvatarChange: (url: string) => void;
   onDescriptionChange: (value: string) => void;
+  onDescriptionEditToggle: () => void;
+  onDescriptionSave: () => void;
+  onOpenEventsBoard: () => void;
   onNewGoalTitleChange: (value: string) => void;
 }) {
   const xpProgress = Math.round((activist.xp / activist.nextLevelXp) * 100);
@@ -346,7 +327,13 @@ function ProfileView({
     <div className="dashboard-grid profile-layout">
       <aside className="profile-column">
         <ProfileCard avatarUrl={avatarUrl} onAvatarChange={onAvatarChange} />
-        <EditableDescription description={description} onChange={onDescriptionChange} />
+        <EditableDescription
+          description={description}
+          isEditing={isDescriptionEditing}
+          onChange={onDescriptionChange}
+          onEditToggle={onDescriptionEditToggle}
+          onSave={onDescriptionSave}
+        />
       </aside>
 
       <section className="main-column">
@@ -362,7 +349,7 @@ function ProfileView({
       </section>
 
       <aside className="side-column profile-side">
-        <NextCheckIn />
+        <NextCheckIn onOpenEventsBoard={onOpenEventsBoard} />
         <MiniAchievements />
       </aside>
     </div>
@@ -370,7 +357,7 @@ function ProfileView({
 }
 
 function BrandMark() {
-  return <div className="brand-mark">МГ</div>;
+  return <img className="brand-mark" src="/mger-logo.png" alt="Молодая Гвардия" />;
 }
 
 function ProfileCard({
@@ -391,7 +378,9 @@ function ProfileCard({
 
   return (
     <article className="panel profile-card">
-      <div className="profile-ribbon" />
+      <div className="profile-ribbon">
+        <img src="/mger-logo.png" alt="" />
+      </div>
       <div className="avatar-row">
         <button
           className="avatar-button"
@@ -446,22 +435,50 @@ function ProfileCard({
 
 function EditableDescription({
   description,
+  isEditing,
   onChange,
+  onEditToggle,
+  onSave,
 }: {
   description: string;
+  isEditing: boolean;
   onChange: (value: string) => void;
+  onEditToggle: () => void;
+  onSave: () => void;
 }) {
   return (
     <section className="panel editable-panel" aria-labelledby="description-title">
       <div className="section-heading">
         <h2 id="description-title">О себе</h2>
-        <Icon name="edit" />
+        <button
+          className="icon-button compact"
+          type="button"
+          aria-label={isEditing ? "Закрыть редактирование" : "Редактировать описание"}
+          onClick={onEditToggle}
+        >
+          <Icon name="edit" />
+        </button>
       </div>
-      <textarea
-        aria-label="Описание профиля"
-        value={description}
-        onChange={(event) => onChange(event.target.value)}
-      />
+      {isEditing ? (
+        <div className="description-editor">
+          <textarea
+            aria-label="Описание профиля"
+            maxLength={maxDescriptionLength}
+            value={description}
+            onChange={(event) => onChange(event.target.value)}
+          />
+          <div className="editor-actions">
+            <span>
+              {description.length} / {maxDescriptionLength}
+            </span>
+            <button className="primary-button small" type="button" onClick={onSave}>
+              Сохранить
+            </button>
+          </div>
+        </div>
+      ) : (
+        <p className="description-text">{description}</p>
+      )}
     </section>
   );
 }
@@ -589,7 +606,7 @@ function ActivityTimeline() {
   );
 }
 
-function NextCheckIn() {
+function NextCheckIn({ onOpenEventsBoard }: { onOpenEventsBoard: () => void }) {
   return (
     <section className="next-checkin" aria-label="Ближайшая отметка">
       <Icon name="calendar" />
@@ -597,14 +614,9 @@ function NextCheckIn() {
         <h2>Ближайшая отметка</h2>
         <p>Сегодня, 18:30 · встреча штаба ЦАО · аудитория 204</p>
       </div>
-      <a
-        className="primary-button"
-        href="https://mger-board.vercel.app"
-        rel="noreferrer"
-        target="_blank"
-      >
+      <button className="primary-button" type="button" onClick={onOpenEventsBoard}>
         Открыть доску
-      </a>
+      </button>
     </section>
   );
 }
@@ -672,6 +684,7 @@ function AchievementsView() {
 
 function AchievementCard({ achievement }: { achievement: (typeof achievements)[number] }) {
   const isLocked = achievement.group === "locked";
+  const progress = achievement.status === "Достигнуто" ? 100 : achievement.progress;
 
   return (
     <article className={isLocked ? "achievement-card locked" : "achievement-card"}>
@@ -681,7 +694,7 @@ function AchievementCard({ achievement }: { achievement: (typeof achievements)[n
       <strong>{achievement.title}</strong>
       <small>{achievement.caption}</small>
       <span>{achievement.status}</span>
-      <ProgressBar value={achievement.progress} />
+      <ProgressBar value={progress} />
     </article>
   );
 }
@@ -768,85 +781,25 @@ function IconButton({
 }
 
 function Icon({ name }: { name: IconName }) {
-  const common = {
-    fill: "none",
-    stroke: "currentColor",
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-    strokeWidth: 2,
-    viewBox: "0 0 24 24",
-  };
-
-  const paths: Record<IconName, ReactElement> = {
-    award: (
-      <>
-        <circle cx="12" cy="8" r="5" />
-        <path d="m8.5 12.5-1.5 8 5-3 5 3-1.5-8" />
-      </>
-    ),
-    calendar: (
-      <>
-        <path d="M7 3v4M17 3v4M4 8h16" />
-        <rect height="17" rx="3" width="18" x="3" y="4" />
-      </>
-    ),
-    camera: (
-      <>
-        <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
-        <circle cx="12" cy="13" r="3.5" />
-      </>
-    ),
-    edit: (
-      <>
-        <path d="M12 20h9" />
-        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
-      </>
-    ),
-    leaderboard: (
-      <>
-        <path d="M5 21V10M12 21V4M19 21v-7" />
-        <path d="M3 21h18" />
-      </>
-    ),
-    "log-out": (
-      <>
-        <path d="M10 17 15 12l-5-5" />
-        <path d="M15 12H3" />
-        <path d="M14 4h5v16h-5" />
-      </>
-    ),
-    moon: <path d="M21 14.5A8 8 0 0 1 9.5 3 7 7 0 1 0 21 14.5Z" />,
-    plus: (
-      <>
-        <path d="M12 5v14M5 12h14" />
-      </>
-    ),
-    shield: <path d="M12 3 5 6v5c0 4.5 2.9 8.4 7 10 4.1-1.6 7-5.5 7-10V6Z" />,
-    sun: (
-      <>
-        <circle cx="12" cy="12" r="4" />
-        <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
-      </>
-    ),
-    target: (
-      <>
-        <circle cx="12" cy="12" r="8" />
-        <circle cx="12" cy="12" r="4" />
-        <circle cx="12" cy="12" r="1" />
-      </>
-    ),
-    user: (
-      <>
-        <circle cx="12" cy="8" r="4" />
-        <path d="M4 21a8 8 0 0 1 16 0" />
-      </>
-    ),
+  const symbols: Record<IconName, string> = {
+    award: "workspace_premium",
+    calendar: "calendar_month",
+    camera: "photo_camera",
+    edit: "edit",
+    leaderboard: "leaderboard",
+    "log-out": "logout",
+    moon: "dark_mode",
+    plus: "add",
+    shield: "verified_user",
+    sun: "light_mode",
+    target: "track_changes",
+    user: "person",
   };
 
   return (
-    <svg aria-hidden="true" className="icon" {...common}>
-      {paths[name]}
-    </svg>
+    <span aria-hidden="true" className="material-symbols-rounded icon">
+      {symbols[name]}
+    </span>
   );
 }
 
