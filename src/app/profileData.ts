@@ -1,9 +1,14 @@
 export const activist = {
   name: "Алексей Кузнецов",
+  fullName: "Кузнецов Алексей Игоревич",
   initials: "АК",
   team: "Московский городской штаб · ЦАО",
+  district: "Центральный федеральный округ",
+  city: "Москва",
   supervisor: "Мария Орлова",
   rank: "Организатор",
+  description:
+    "Координирую волонтёрские смены, помогаю новичкам включаться в работу штаба и веду медиаподдержку городских инициатив.",
   level: 7,
   title: "Координатор инициатив",
   xp: 3580,
@@ -78,7 +83,8 @@ export const achievements = [
     title: "Первый штаб",
     caption: "5 событий",
     progress: 92,
-    status: "Открыто",
+    status: "Достигнуто",
+    group: "completed",
   },
   {
     id: "leader",
@@ -86,13 +92,15 @@ export const achievements = [
     caption: "топ-10 штаба",
     progress: 54,
     status: "В процессе",
+    group: "active",
   },
   {
     id: "mentor",
     title: "Наставник",
     caption: "4 новичка",
     progress: 78,
-    status: "Открыто",
+    status: "Достигнуто",
+    group: "completed",
   },
   {
     id: "media",
@@ -100,6 +108,23 @@ export const achievements = [
     caption: "3 публикации",
     progress: 64,
     status: "В процессе",
+    group: "active",
+  },
+  {
+    id: "speaker",
+    title: "Спикер",
+    caption: "10 выступлений",
+    progress: 32,
+    status: "Доступно",
+    group: "active",
+  },
+  {
+    id: "curator",
+    title: "Куратор",
+    caption: "7 инициатив",
+    progress: 0,
+    status: "Недоступно",
+    group: "locked",
   },
 ] as const;
 

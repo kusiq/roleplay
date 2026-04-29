@@ -12,7 +12,7 @@ dist
 dist-ssr
 *.local
 .playwright-mcp/
-activist-dashboard-*.png
+activist-*.png
 
 # Editor directories and files
 .vscode/*

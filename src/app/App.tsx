@@ -1,14 +1,40 @@
-import type { CSSProperties, FormEvent } from "react";
-import { useEffect, useState } from "react";
-import { achievements, activities, activist, goals, leaderboard, stats } from "./profileData";
+import type { ChangeEvent, CSSProperties, FormEvent, ReactElement } from "react";
+import { useEffect, useRef, useState } from "react";
+import {
+  achievements,
+  activities,
+  activist,
+  goals as initialGoals,
+  leaderboard,
+  stats,
+} from "./profileData";
 
 type ThemeMode = "light" | "dark";
 type Tone = "green" | "red" | "blue";
+type AppView = "profile" | "achievements" | "leaderboard";
+type IconName =
+  | "award"
+  | "calendar"
+  | "camera"
+  | "edit"
+  | "leaderboard"
+  | "log-out"
+  | "moon"
+  | "plus"
+  | "shield"
+  | "sun"
+  | "target"
+  | "user";
+
+type WeeklyGoal = {
+  title: string;
+  progress: number;
+  status: string;
+};
 
 function App() {
   const [theme, setTheme] = useState<ThemeMode>("light");
   const [isSignedIn, setIsSignedIn] = useState(false);
-  const [selectedAchievementId, setSelectedAchievementId] = useState<string>(achievements[0].id);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -22,10 +48,8 @@ function App() {
     <main className="app-shell">
       {isSignedIn ? (
         <Dashboard
-          selectedAchievementId={selectedAchievementId}
           theme={theme}
-          onSelectAchievement={setSelectedAchievementId}
-          onSignOut={() => setIsSignedIn(false)}
+          onConfirmSignOut={() => setIsSignedIn(false)}
           onToggleTheme={toggleTheme}
         />
       ) : (
@@ -58,9 +82,11 @@ function LoginScreen({
       <div className="login-card">
         <div className="brand-row">
           <BrandMark />
-          <button className="theme-button compact" type="button" onClick={onToggleTheme}>
-            {theme === "light" ? "Тёмная" : "Светлая"}
-          </button>
+          <IconButton
+            icon={theme === "light" ? "moon" : "sun"}
+            label={theme === "light" ? "Включить тёмную тему" : "Включить светлую тему"}
+            onClick={onToggleTheme}
+          />
         </div>
 
         <div className="login-heading">
@@ -89,6 +115,7 @@ function LoginScreen({
             />
           </label>
           <button className="primary-button" type="submit">
+            <Icon name="shield" />
             Войти в профиль
           </button>
         </form>
@@ -98,55 +125,91 @@ function LoginScreen({
 }
 
 function Dashboard({
-  onSignOut,
+  onConfirmSignOut,
   onToggleTheme,
-  onSelectAchievement,
-  selectedAchievementId,
   theme,
 }: {
-  onSignOut: () => void;
+  onConfirmSignOut: () => void;
   onToggleTheme: () => void;
-  onSelectAchievement: (id: string) => void;
-  selectedAchievementId: string;
   theme: ThemeMode;
 }) {
-  const xpProgress = Math.round((activist.xp / activist.nextLevelXp) * 100);
+  const [activeView, setActiveView] = useState<AppView>("profile");
+  const [isSignOutOpen, setIsSignOutOpen] = useState(false);
+  const [goals, setGoals] = useState<WeeklyGoal[]>([...initialGoals]);
+  const [description, setDescription] = useState(activist.description);
+  const [avatarUrl, setAvatarUrl] = useState<string>();
+  const [newGoalTitle, setNewGoalTitle] = useState("");
+
+  const addGoal = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const title = newGoalTitle.trim();
+    if (!title) return;
+
+    setGoals((current) => [
+      ...current,
+      {
+        title,
+        progress: 0,
+        status: "Новая цель",
+      },
+    ]);
+    setNewGoalTitle("");
+  };
+
+  const content = {
+    profile: (
+      <ProfileView
+        avatarUrl={avatarUrl}
+        description={description}
+        goals={goals}
+        newGoalTitle={newGoalTitle}
+        onAddGoal={addGoal}
+        onAvatarChange={setAvatarUrl}
+        onDescriptionChange={setDescription}
+        onNewGoalTitleChange={setNewGoalTitle}
+      />
+    ),
+    achievements: <AchievementsView />,
+    leaderboard: <LeaderboardView />,
+  } satisfies Record<AppView, ReactElement>;
 
   return (
     <section className="dashboard" aria-label="Профиль активиста">
-      <AppHeader onSignOut={onSignOut} onToggleTheme={onToggleTheme} theme={theme} />
+      <AppHeader
+        activeView={activeView}
+        onOpenSignOut={() => setIsSignOutOpen(true)}
+        onSelectView={setActiveView}
+        onToggleTheme={onToggleTheme}
+        theme={theme}
+      />
 
-      <div className="dashboard-grid">
-        <aside className="profile-column">
-          <ProfileCard />
-          <WeeklyGoals />
-        </aside>
+      {content[activeView]}
 
-        <section className="main-column">
-          <ProgressPanel progress={xpProgress} />
-          <StatsGrid />
-          <ActivityTimeline />
-          <NextCheckIn />
-        </section>
+      <BottomNav activeView={activeView} onSelectView={setActiveView} />
 
-        <aside className="side-column">
-          <AchievementList
-            onSelect={onSelectAchievement}
-            selectedAchievementId={selectedAchievementId}
-          />
-          <Leaderboard />
-        </aside>
-      </div>
+      {isSignOutOpen ? (
+        <SignOutModal
+          onCancel={() => setIsSignOutOpen(false)}
+          onConfirm={() => {
+            setIsSignOutOpen(false);
+            onConfirmSignOut();
+          }}
+        />
+      ) : null}
     </section>
   );
 }
 
 function AppHeader({
-  onSignOut,
+  activeView,
+  onOpenSignOut,
+  onSelectView,
   onToggleTheme,
   theme,
 }: {
-  onSignOut: () => void;
+  activeView: AppView;
+  onOpenSignOut: () => void;
+  onSelectView: (view: AppView) => void;
   onToggleTheme: () => void;
   theme: ThemeMode;
 }) {
@@ -161,29 +224,148 @@ function AppHeader({
       </div>
 
       <nav className="top-nav" aria-label="Разделы">
-        <button className="nav-pill active" type="button">
-          <span />
-          Профиль
-        </button>
-        <button className="nav-pill" type="button">
-          <span />
-          События
-        </button>
-        <button className="nav-pill" type="button">
-          <span />
-          Рейтинг
-        </button>
+        <TopNavButton
+          active={activeView === "profile"}
+          icon="user"
+          label="Профиль"
+          onClick={() => onSelectView("profile")}
+        />
+        <TopNavButton
+          active={activeView === "achievements"}
+          icon="award"
+          label="Достижения"
+          onClick={() => onSelectView("achievements")}
+        />
+        <TopNavButton
+          active={activeView === "leaderboard"}
+          icon="leaderboard"
+          label="Рейтинг"
+          onClick={() => onSelectView("leaderboard")}
+        />
       </nav>
 
       <div className="header-actions">
-        <button className="theme-button" type="button" onClick={onToggleTheme}>
-          {theme === "light" ? "Тёмная" : "Светлая"}
-        </button>
-        <button className="ghost-button" type="button" onClick={onSignOut}>
-          Выйти
-        </button>
+        <IconButton
+          icon={theme === "light" ? "moon" : "sun"}
+          label={theme === "light" ? "Включить тёмную тему" : "Включить светлую тему"}
+          onClick={onToggleTheme}
+        />
+        <IconButton danger icon="log-out" label="Выйти" onClick={onOpenSignOut} />
       </div>
     </header>
+  );
+}
+
+function TopNavButton({
+  active,
+  icon,
+  label,
+  onClick,
+}: {
+  active: boolean;
+  icon: IconName;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button className={active ? "nav-pill active" : "nav-pill"} type="button" onClick={onClick}>
+      <Icon name={icon} />
+      {label}
+    </button>
+  );
+}
+
+function BottomNav({
+  activeView,
+  onSelectView,
+}: {
+  activeView: AppView;
+  onSelectView: (view: AppView) => void;
+}) {
+  return (
+    <nav className="bottom-nav" aria-label="Основное меню">
+      <button
+        className={activeView === "profile" ? "bottom-nav-item active" : "bottom-nav-item"}
+        type="button"
+        onClick={() => onSelectView("profile")}
+      >
+        <Icon name="user" />
+        <span>Профиль</span>
+      </button>
+      <button
+        className={activeView === "achievements" ? "bottom-nav-item active" : "bottom-nav-item"}
+        type="button"
+        onClick={() => onSelectView("achievements")}
+      >
+        <Icon name="award" />
+        <span>Достижения</span>
+      </button>
+      <button
+        className={activeView === "leaderboard" ? "bottom-nav-item active" : "bottom-nav-item"}
+        type="button"
+        onClick={() => onSelectView("leaderboard")}
+      >
+        <Icon name="leaderboard" />
+        <span>Рейтинг</span>
+      </button>
+      <a
+        className="bottom-nav-item"
+        href="https://mger-board.vercel.app"
+        rel="noreferrer"
+        target="_blank"
+      >
+        <Icon name="calendar" />
+        <span>События</span>
+      </a>
+    </nav>
+  );
+}
+
+function ProfileView({
+  avatarUrl,
+  description,
+  goals,
+  newGoalTitle,
+  onAddGoal,
+  onAvatarChange,
+  onDescriptionChange,
+  onNewGoalTitleChange,
+}: {
+  avatarUrl?: string;
+  description: string;
+  goals: WeeklyGoal[];
+  newGoalTitle: string;
+  onAddGoal: (event: FormEvent<HTMLFormElement>) => void;
+  onAvatarChange: (url: string) => void;
+  onDescriptionChange: (value: string) => void;
+  onNewGoalTitleChange: (value: string) => void;
+}) {
+  const xpProgress = Math.round((activist.xp / activist.nextLevelXp) * 100);
+
+  return (
+    <div className="dashboard-grid profile-layout">
+      <aside className="profile-column">
+        <ProfileCard avatarUrl={avatarUrl} onAvatarChange={onAvatarChange} />
+        <EditableDescription description={description} onChange={onDescriptionChange} />
+      </aside>
+
+      <section className="main-column">
+        <ProgressPanel progress={xpProgress} />
+        <StatsGrid />
+        <WeeklyGoals
+          goals={goals}
+          newGoalTitle={newGoalTitle}
+          onAddGoal={onAddGoal}
+          onNewGoalTitleChange={onNewGoalTitleChange}
+        />
+        <ActivityTimeline />
+      </section>
+
+      <aside className="side-column profile-side">
+        <NextCheckIn />
+        <MiniAchievements />
+      </aside>
+    </div>
   );
 }
 
@@ -191,21 +373,63 @@ function BrandMark() {
   return <div className="brand-mark">МГ</div>;
 }
 
-function ProfileCard() {
+function ProfileCard({
+  avatarUrl,
+  onAvatarChange,
+}: {
+  avatarUrl?: string;
+  onAvatarChange: (url: string) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatarUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    onAvatarChange(URL.createObjectURL(file));
+  };
+
   return (
     <article className="panel profile-card">
       <div className="profile-ribbon" />
       <div className="avatar-row">
-        <div className="avatar">{activist.initials}</div>
+        <button
+          className="avatar-button"
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          aria-label="Изменить фото профиля"
+        >
+          <span className="avatar">
+            {avatarUrl ? <img alt="" src={avatarUrl} /> : activist.initials}
+          </span>
+          <span className="avatar-edit">
+            <Icon name="camera" />
+          </span>
+        </button>
+        <input
+          ref={inputRef}
+          className="visually-hidden"
+          type="file"
+          accept="image/*"
+          onChange={handleAvatarUpload}
+        />
         <span className="rank-pill">{activist.rank}</span>
       </div>
 
       <div className="profile-copy">
-        <h2>{activist.name}</h2>
+        <h2>{activist.fullName}</h2>
         <p>{activist.team}</p>
       </div>
 
       <dl className="profile-meta">
+        <div>
+          <dt>Федеральный округ</dt>
+          <dd>{activist.district}</dd>
+        </div>
+        <div>
+          <dt>Город</dt>
+          <dd>{activist.city}</dd>
+        </div>
         <div>
           <dt>Руководитель</dt>
           <dd>{activist.supervisor}</dd>
@@ -214,9 +438,31 @@ function ProfileCard() {
 
       <div className="profile-split">
         <Metric value={activist.streak.toString()} label="дней активности" tone="green" />
-        <Metric value={`#${activist.rating}`} label="в штабе" tone="red" />
+        <Metric value={`#${activist.rating}`} label="место в штабе" tone="red" />
       </div>
     </article>
+  );
+}
+
+function EditableDescription({
+  description,
+  onChange,
+}: {
+  description: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <section className="panel editable-panel" aria-labelledby="description-title">
+      <div className="section-heading">
+        <h2 id="description-title">О себе</h2>
+        <Icon name="edit" />
+      </div>
+      <textarea
+        aria-label="Описание профиля"
+        value={description}
+        onChange={(event) => onChange(event.target.value)}
+      />
+    </section>
   );
 }
 
@@ -229,16 +475,39 @@ function Metric({ label, tone, value }: { label: string; tone: Tone; value: stri
   );
 }
 
-function WeeklyGoals() {
+function WeeklyGoals({
+  goals,
+  newGoalTitle,
+  onAddGoal,
+  onNewGoalTitleChange,
+}: {
+  goals: WeeklyGoal[];
+  newGoalTitle: string;
+  onAddGoal: (event: FormEvent<HTMLFormElement>) => void;
+  onNewGoalTitleChange: (value: string) => void;
+}) {
   return (
     <section className="panel weekly-goals" aria-labelledby="weekly-goals-title">
       <div className="section-heading">
         <h2 id="weekly-goals-title">Цели недели</h2>
+        <Icon name="target" />
       </div>
+
+      <form className="add-goal-form" onSubmit={onAddGoal}>
+        <input
+          aria-label="Новая цель недели"
+          placeholder="Добавить свою цель"
+          value={newGoalTitle}
+          onChange={(event) => onNewGoalTitleChange(event.target.value)}
+        />
+        <button className="icon-button" type="submit" aria-label="Добавить цель">
+          <Icon name="plus" />
+        </button>
+      </form>
 
       <div className="goal-list">
         {goals.map((goal, index) => (
-          <article className="goal-item" key={goal.title}>
+          <article className="goal-item" key={`${goal.title}-${index}`}>
             <div className="goal-index">{index + 1}</div>
             <div>
               <div className="goal-title-row">
@@ -323,71 +592,261 @@ function ActivityTimeline() {
 function NextCheckIn() {
   return (
     <section className="next-checkin" aria-label="Ближайшая отметка">
+      <Icon name="calendar" />
       <div>
         <h2>Ближайшая отметка</h2>
         <p>Сегодня, 18:30 · встреча штаба ЦАО · аудитория 204</p>
       </div>
-      <button className="primary-button" type="button">
-        Отметиться
-      </button>
+      <a
+        className="primary-button"
+        href="https://mger-board.vercel.app"
+        rel="noreferrer"
+        target="_blank"
+      >
+        Открыть доску
+      </a>
     </section>
   );
 }
 
-function AchievementList({
-  onSelect,
-  selectedAchievementId,
+function MiniAchievements() {
+  return (
+    <section className="panel achievements-panel" aria-labelledby="mini-achievements-title">
+      <div className="section-heading">
+        <h2 id="mini-achievements-title">Ближайшие награды</h2>
+        <Icon name="award" />
+      </div>
+      <div className="achievement-grid compact">
+        {achievements.slice(0, 4).map((achievement) => (
+          <AchievementCard achievement={achievement} key={achievement.id} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function AchievementsView() {
+  const groups = [
+    {
+      title: "Достигнутые",
+      items: achievements.filter((achievement) => achievement.group === "completed"),
+    },
+    {
+      title: "Активные",
+      items: achievements.filter((achievement) => achievement.group === "active"),
+    },
+    {
+      title: "Недоступные",
+      items: achievements.filter((achievement) => achievement.group === "locked"),
+    },
+  ];
+
+  return (
+    <section className="content-page" aria-labelledby="achievements-page-title">
+      <div className="page-heading">
+        <div>
+          <span className="level-caption">Награды и звания</span>
+          <h1 id="achievements-page-title">Достижения</h1>
+        </div>
+        <Icon name="award" />
+      </div>
+
+      <div className="achievement-sections">
+        {groups.map((group) => (
+          <section className="panel achievement-section" key={group.title}>
+            <div className="section-heading">
+              <h2>{group.title}</h2>
+              <span>{group.items.length}</span>
+            </div>
+            <div className="achievement-grid page-grid">
+              {group.items.map((achievement) => (
+                <AchievementCard achievement={achievement} key={achievement.id} />
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function AchievementCard({ achievement }: { achievement: (typeof achievements)[number] }) {
+  const isLocked = achievement.group === "locked";
+
+  return (
+    <article className={isLocked ? "achievement-card locked" : "achievement-card"}>
+      <div className="medal-icon" aria-hidden="true">
+        <Icon name="award" />
+      </div>
+      <strong>{achievement.title}</strong>
+      <small>{achievement.caption}</small>
+      <span>{achievement.status}</span>
+      <ProgressBar value={achievement.progress} />
+    </article>
+  );
+}
+
+function LeaderboardView() {
+  return (
+    <section className="content-page" aria-labelledby="leaderboard-page-title">
+      <div className="page-heading">
+        <div>
+          <span className="level-caption">Московский штаб · ЦАО</span>
+          <h1 id="leaderboard-page-title">Лидерборд штаба</h1>
+        </div>
+        <Icon name="leaderboard" />
+      </div>
+
+      <section className="panel leaderboard-wide">
+        <div className="leader-list wide">
+          {leaderboard.map((leader) => (
+            <article
+              className={leader.current ? "leader-row current" : "leader-row"}
+              key={leader.place}
+            >
+              <strong>{leader.place}</strong>
+              <span className="leader-avatar">{leader.name.slice(0, 1)}</span>
+              <span>{leader.name}</span>
+              <b>{formatNumber(leader.points)} XP</b>
+            </article>
+          ))}
+        </div>
+      </section>
+    </section>
+  );
+}
+
+function SignOutModal({ onCancel, onConfirm }: { onCancel: () => void; onConfirm: () => void }) {
+  return (
+    <div className="modal-backdrop" role="presentation">
+      <section
+        aria-labelledby="signout-title"
+        aria-modal="true"
+        className="confirm-modal"
+        role="dialog"
+      >
+        <div className="modal-icon">
+          <Icon name="log-out" />
+        </div>
+        <h2 id="signout-title">Выйти из профиля?</h2>
+        <p>Текущие демо-изменения останутся только в этой сессии браузера.</p>
+        <div className="modal-actions">
+          <button className="ghost-button" type="button" onClick={onCancel}>
+            Нет
+          </button>
+          <button className="danger-button" type="button" onClick={onConfirm}>
+            Да, выйти
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function IconButton({
+  danger = false,
+  icon,
+  label,
+  onClick,
 }: {
-  onSelect: (id: string) => void;
-  selectedAchievementId: string;
+  danger?: boolean;
+  icon: IconName;
+  label: string;
+  onClick: () => void;
 }) {
   return (
-    <section className="panel achievements-panel" aria-labelledby="achievements-title">
-      <div className="section-heading">
-        <h2 id="achievements-title">Достижения</h2>
-      </div>
-
-      <div className="achievement-grid">
-        {achievements.map((achievement) => (
-          <button
-            aria-pressed={selectedAchievementId === achievement.id}
-            className="achievement-item"
-            key={achievement.id}
-            onClick={() => onSelect(achievement.id)}
-            type="button"
-          >
-            <span className="achievement-medal">{achievement.progress > 70 ? "★" : "•"}</span>
-            <strong>{achievement.title}</strong>
-            <small>{achievement.caption}</small>
-            <ProgressBar value={achievement.progress} />
-          </button>
-        ))}
-      </div>
-    </section>
+    <button
+      className={danger ? "icon-button danger" : "icon-button"}
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+    >
+      <Icon name={icon} />
+    </button>
   );
 }
 
-function Leaderboard() {
-  return (
-    <section className="panel leaderboard-panel" aria-labelledby="leaderboard-title">
-      <div className="section-heading">
-        <h2 id="leaderboard-title">Лидерборд штаба</h2>
-      </div>
+function Icon({ name }: { name: IconName }) {
+  const common = {
+    fill: "none",
+    stroke: "currentColor",
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    strokeWidth: 2,
+    viewBox: "0 0 24 24",
+  };
 
-      <div className="leader-list">
-        {leaderboard.map((leader) => (
-          <article
-            className={leader.current ? "leader-row current" : "leader-row"}
-            key={leader.place}
-          >
-            <strong>{leader.place}</strong>
-            <span className="leader-avatar">{leader.name.slice(0, 1)}</span>
-            <span>{leader.name}</span>
-            <b>{formatNumber(leader.points)}</b>
-          </article>
-        ))}
-      </div>
-    </section>
+  const paths: Record<IconName, ReactElement> = {
+    award: (
+      <>
+        <circle cx="12" cy="8" r="5" />
+        <path d="m8.5 12.5-1.5 8 5-3 5 3-1.5-8" />
+      </>
+    ),
+    calendar: (
+      <>
+        <path d="M7 3v4M17 3v4M4 8h16" />
+        <rect height="17" rx="3" width="18" x="3" y="4" />
+      </>
+    ),
+    camera: (
+      <>
+        <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+        <circle cx="12" cy="13" r="3.5" />
+      </>
+    ),
+    edit: (
+      <>
+        <path d="M12 20h9" />
+        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+      </>
+    ),
+    leaderboard: (
+      <>
+        <path d="M5 21V10M12 21V4M19 21v-7" />
+        <path d="M3 21h18" />
+      </>
+    ),
+    "log-out": (
+      <>
+        <path d="M10 17 15 12l-5-5" />
+        <path d="M15 12H3" />
+        <path d="M14 4h5v16h-5" />
+      </>
+    ),
+    moon: <path d="M21 14.5A8 8 0 0 1 9.5 3 7 7 0 1 0 21 14.5Z" />,
+    plus: (
+      <>
+        <path d="M12 5v14M5 12h14" />
+      </>
+    ),
+    shield: <path d="M12 3 5 6v5c0 4.5 2.9 8.4 7 10 4.1-1.6 7-5.5 7-10V6Z" />,
+    sun: (
+      <>
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+      </>
+    ),
+    target: (
+      <>
+        <circle cx="12" cy="12" r="8" />
+        <circle cx="12" cy="12" r="4" />
+        <circle cx="12" cy="12" r="1" />
+      </>
+    ),
+    user: (
+      <>
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4 21a8 8 0 0 1 16 0" />
+      </>
+    ),
+  };
+
+  return (
+    <svg aria-hidden="true" className="icon" {...common}>
+      {paths[name]}
+    </svg>
   );
 }
 
