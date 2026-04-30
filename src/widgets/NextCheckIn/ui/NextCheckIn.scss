@@ -1,0 +1,43 @@
+.next-checkin {
+  display: grid;
+  gap: 12px;
+  padding: 22px;
+  border: 1px solid color-mix(in srgb, var(--red) 18%, var(--border));
+  border-radius: 24px;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--blue-soft) 82%, transparent),
+      transparent
+    ),
+    color-mix(in srgb, var(--surface) 84%, transparent);
+  box-shadow: 0 18px 48px var(--shadow);
+  backdrop-filter: blur(20px);
+  min-width: 0;
+}
+
+.next-checkin-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.next-checkin h2 {
+  margin: 0;
+  font-size: 1.1875rem;
+}
+
+.next-checkin p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.next-checkin-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.next-checkin .primary-button {
+  white-space: nowrap;
+}

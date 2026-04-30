@@ -1,0 +1,72 @@
+.leader-list {
+  display: grid;
+  gap: 10px;
+}
+
+.leader-list.wide {
+  gap: 10px;
+}
+
+.leader-row {
+  display: grid;
+  grid-template-columns: 28px 34px minmax(0, 1fr) max-content;
+  gap: 10px;
+  min-height: 54px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--surface-raised) 86%, transparent);
+  display: flex;
+  align-items: center;
+}
+
+.leader-list.wide .leader-row {
+  min-height: 58px;
+  padding: 12px 14px;
+}
+
+.leader-row.current {
+  border-color: var(--green);
+  background: var(--green-soft);
+}
+
+.leader-row strong {
+  color: var(--green);
+}
+
+.leader-avatar {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.leader-row.current .leader-avatar {
+  background: var(--green);
+  color: white;
+}
+
+.leader-row span,
+.leader-row b {
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.leader-row > span:not(.leader-avatar) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.leader-row b {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.leaderboard-wide {
+  padding: 20px;
+}

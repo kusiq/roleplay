@@ -1,0 +1,25 @@
+.editable-panel {
+  padding: 20px;
+}
+
+.description-text {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+
+.description-editor {
+  display: grid;
+  gap: 10px;
+}
+
+.editor-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--faint);
+  font-size: 0.75rem;
+  font-weight: 800;
+}

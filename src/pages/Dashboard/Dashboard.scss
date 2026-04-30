@@ -1,0 +1,36 @@
+.dashboard {
+  min-height: 100vh;
+  width: 100%;
+  padding: 90px 16px 102px;
+  overflow-x: hidden;
+}
+
+.dashboard-grid,
+.content-page {
+  width: 100%;
+  max-width: 1180px;
+  margin: 18px auto 0;
+  min-width: 0;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+  width: 100%;
+  min-width: 0;
+}
+
+.profile-column,
+.main-column,
+.side-column {
+  display: grid;
+  align-content: start;
+  gap: 22px;
+  min-width: 0;
+}
+
+.content-page {
+  display: grid;
+  gap: 18px;
+}

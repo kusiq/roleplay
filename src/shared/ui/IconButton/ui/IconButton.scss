@@ -1,0 +1,32 @@
+.icon-button {
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+  display: inline-grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  color: var(--text);
+  backdrop-filter: blur(18px);
+}
+
+.icon-button.compact {
+  width: 34px;
+  height: 34px;
+}
+
+.icon-button.danger {
+  border-color: color-mix(in srgb, var(--red) 38%, var(--border));
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.icon-button:hover {
+  transform: translateY(-1px);
+}

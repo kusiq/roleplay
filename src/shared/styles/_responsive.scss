@@ -1,0 +1,177 @@
+@media (max-width: 650px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .next-checkin .primary-button {
+    white-space: normal;
+  }
+
+  .next-checkin {
+    flex-wrap: wrap;
+  }
+
+  .side-column {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .achievement-sections {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .login-screen {
+    align-items: start;
+    padding: 12px;
+  }
+
+  .login-card {
+    padding: 20px;
+  }
+
+  .login-heading {
+    margin: 34px 0 22px;
+  }
+
+  .dashboard {
+    padding: 10px 10px 92px;
+  }
+
+  .app-header {
+    top: 8px;
+    align-items: center;
+    flex-wrap: nowrap;
+    border-radius: 99px;
+  }
+
+  .header-brand {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .header-actions {
+    margin-left: auto;
+    gap: 6px;
+  }
+
+  .header-actions .icon-button {
+    width: 38px;
+    height: 38px;
+  }
+
+  .dashboard-grid,
+  .side-column,
+  .stats-grid,
+  .achievement-grid,
+  .achievement-grid.compact {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-column,
+  .main-column,
+  .side-column {
+    min-width: 0;
+  }
+
+  .progress-panel {
+    grid-template-columns: 1fr;
+    padding: 24px;
+  }
+
+  .xp-block {
+    justify-items: start;
+  }
+
+  .progress-panel h1,
+  .login-heading h1,
+  .page-heading h1 {
+    font-size: 1.8125rem;
+  }
+
+  .timeline-item {
+    grid-template-columns: 14px minmax(0, 1fr);
+  }
+
+  .timeline-item > strong {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .next-checkin {
+    display: grid;
+  }
+
+  .next-checkin .primary-button {
+    justify-self: stretch;
+    white-space: normal;
+  }
+
+  .goal-title-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .page-heading {
+    min-height: auto;
+    padding: 18px;
+  }
+
+  .bottom-nav {
+    bottom: 10px;
+    width: calc(100vw - 18px);
+    gap: 4px;
+    padding: 5px;
+  }
+
+  .bottom-nav-item {
+    min-height: 46px;
+    font-size: 0.625rem;
+  }
+
+  .modal-actions {
+    display: grid;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard {
+    padding: 8px 8px 92px;
+  }
+
+  .dashboard-grid {
+    gap: 12px;
+  }
+
+  .next-checkin {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .next-checkin h2 {
+    font-size: 1.0625rem;
+  }
+
+  .next-checkin p {
+    font-size: 0.875rem;
+  }
+
+  .achievements-panel {
+    padding: 16px;
+  }
+
+  .profile-column,
+  .main-column,
+  .side-column {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 360px) {
+  .header-brand > div {
+    display: none;
+  }
+}

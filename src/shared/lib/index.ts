@@ -1,2 +1,1 @@
-// Shared utilities and helper functions
-// Export utility functions here
+export { formatNumber } from "./formatNumber";

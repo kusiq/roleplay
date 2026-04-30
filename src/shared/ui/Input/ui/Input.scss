@@ -1,0 +1,23 @@
+.auth-form input,
+.add-goal-form input {
+  background: var(--surface-raised);
+  color: var(--text);
+  border-radius: 35px 99px 99px 99px;
+  width: 100%;
+  border: 1px solid var(--border);
+  height: 50px;
+  padding: 0 16px;
+}
+
+.editable-panel textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-raised);
+  color: var(--text);
+  min-height: 132px;
+  max-height: 260px;
+  resize: vertical;
+  padding: 14px 16px;
+  line-height: 1.55;
+}

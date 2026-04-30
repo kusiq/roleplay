@@ -1,0 +1,47 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..700,0..1,-50..200&display=swap");
+
+:root {
+  color-scheme: light;
+  --bg: #f4f7fb;
+  --bg-wash: #eaf2ff;
+  --surface: #ffffff;
+  --surface-soft: #eef5ff;
+  --surface-raised: #fbfdff;
+  --glass: rgba(255, 255, 255, 0.72);
+  --border: rgba(47, 125, 225, 0.16);
+  --text: #121821;
+  --muted: #5c6b7e;
+  --faint: #8290a3;
+  --green: #2f7de1;
+  --green-soft: #e7f1ff;
+  --red: #e64d5b;
+  --red-soft: #fff0f2;
+  --blue: #2f7de1;
+  --blue-soft: #e7f1ff;
+  --yellow: #f4c753;
+  --shadow: rgba(22, 50, 92, 0.1);
+  --shadow-strong: rgba(14, 28, 52, 0.18);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #080d14;
+  --bg-wash: #0d1725;
+  --surface: #111a27;
+  --surface-soft: #172235;
+  --surface-raised: #101824;
+  --glass: rgba(17, 26, 39, 0.74);
+  --border: rgba(146, 180, 232, 0.18);
+  --text: #f6f9ff;
+  --muted: #b5c2d5;
+  --faint: #7f8ca0;
+  --green: #79afff;
+  --green-soft: #162b49;
+  --red: #ff7884;
+  --red-soft: #351b24;
+  --blue: #79afff;
+  --blue-soft: #162b49;
+  --yellow: #f5cf68;
+  --shadow: rgba(0, 0, 0, 0.28);
+  --shadow-strong: rgba(0, 0, 0, 0.38);
+}

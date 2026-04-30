@@ -1,0 +1,46 @@
+.progress-panel {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  padding: 24px;
+}
+
+.progress-panel h1 {
+  margin-bottom: 14px;
+  font-size: 2.25rem;
+  line-height: 1.12;
+}
+
+.progress-panel p {
+  margin-bottom: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.xp-block {
+  display: grid;
+  align-content: start;
+  justify-items: end;
+}
+
+.xp-block strong {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.xp-block span,
+.wide-progress span {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.wide-progress {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 10px;
+}
+
+.wide-progress .progress-bar {
+  height: 14px;
+}

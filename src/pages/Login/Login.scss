@@ -1,0 +1,53 @@
+.login-screen {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 18px;
+}
+
+.login-card {
+  width: min(100%, 430px);
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  background:
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--blue-soft) 56%, transparent),
+      transparent 45%
+    ),
+    var(--glass);
+  box-shadow: 0 24px 70px var(--shadow);
+  backdrop-filter: blur(24px) saturate(1.25);
+}
+
+.login-heading {
+  margin: 46px 0 24px;
+}
+
+.login-heading h1 {
+  margin-bottom: 14px;
+  font-size: 2.25rem;
+  line-height: 1.12;
+}
+
+.eyebrow,
+.level-caption {
+  margin: 0 0 10px;
+  color: var(--green);
+  font-size: 0.8125rem;
+  font-weight: 800;
+}
+
+.auth-form {
+  display: grid;
+  gap: 18px;
+}
+
+.auth-form label {
+  display: grid;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
